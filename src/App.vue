@@ -1,9 +1,8 @@
 <template>
-  <div id="app" class="container">
+  <div id="app">
     <router-view/>
   </div>
 </template>
-
 <style>
 /* CSS RESET */
 * { margin: 0; padding: 0; }
@@ -18,8 +17,6 @@ body {
   align-items: center;
   -webkit-box-pack: center;
   justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
   background-color: #f5f5f5;
 }
 input, button, textarea, select { font: inherit; }
@@ -45,6 +42,8 @@ img, video, svg { height: auto; max-width: 100%; }
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100dvh;
+  width: 100vw;
 }
 
 nav {

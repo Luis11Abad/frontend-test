@@ -1,40 +1,39 @@
-<!-- eslint-disable eqeqeq -->
 <template>
   <div class="product-list">
     <h1>Product List</h1>
     <div v-if="loading" class="loading">Loading...</div>
-    <div v-if="error" class="error">{{ error }}</div>
-    
     <div v-if="!loading && !error" class="products">
       <div v-for="product in products" :key="product.id">
         <product-card 
-          v-bind:product="product"
-          v-on:product-favorite-clicked="toggleProductFavorite(products, product.id)"
+          @product-favorite-clicked="toggleProductFavorite(product.id)"
+          :isFavorite="favoriteProductIds.includes(product.id)"
+          :product="product"
         />
       </div>
     </div>
+    <alert v-if="error" class="mt-4" type="danger" :message="error"/>
   </div>
 </template> 
 
 <script>
-import axios from 'axios'
+import Alert from '../components/ui/Alert.vue'
 import ProductCard from '../components/ProductCard.vue'
-import { getProductsListEndpoint } from '@/helpers/constants';
+import { getAllProducts } from '@/services/products';
+import { watch } from 'vue';
 
 export default {
   name: 'ProductsList',
   components: {
+    Alert,
     ProductCard
-  },
-  created () {
-    this.fetchProducts()
   },
   mounted () {
     this.fetchProducts()
   },
   data () {
     return {
-      products: [], 
+      products: [],
+      favoriteProductIds: localStorage.favoriteProductIds ? JSON.parse(localStorage.favoriteProductIds) : [],
       loading: true,
       error: null
     }
@@ -42,31 +41,36 @@ export default {
   methods: {
     async fetchProducts () {
       try {
-        const response = await axios.get(getProductsListEndpoint) 
-        this.products = response.data.slice(0, 5)
-      } catch (err) {
-        this.error = 'Failed to load products'
-      } finally {
+        // Extract the logic and limit the length using the API
+        const data = await getAllProducts({ limit: 5 })
+
+        // Assign the results if the request was successful
+        this.products = (data.status === 200) ? data.data : []
+
+        // Otherwise, throw an error
+        if(data.status !== 200) throw new Error(data)
+      } 
+      catch (error) {
+        this.error = error.message ?? 'Something went wrong while signing in'
+      } 
+      finally {
         this.loading = false
       }
     },
-    toggleProductFavorite (products, productSelectedId) {
-      var output = []
-      
-      for (var i = 0; i < products.length; i++) {
-        var productData = products[i]
+    toggleProductFavorite (productSelectedId) {
+      //Find in the favorite products array if the product is already there
+      const index = this.favoriteProductIds.indexOf(productSelectedId)
 
-        output.push(function () {     
-          if (productData.id == String(productSelectedId)) { 
-            productData.favorite = true
-          }
-          
-          return productData
-        })
-      }
-
-      this.products = output
-      return output
+      // Add it if not, otherwise remove it
+      if (index === -1) this.favoriteProductIds.push(productSelectedId)
+      else this.favoriteProductIds.splice(index, 1)
+    }
+  },
+  watch: {
+    favoriteProductIds: {
+      handler: function (newVal) {
+        localStorage.favoriteProductIds = JSON.stringify(newVal)
+      },
     }
   }
 }

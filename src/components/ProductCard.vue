@@ -1,6 +1,6 @@
 <template>
   <div class="product-item">
-    <span class="icono favorite"></span>
+    <span @click="toggleFavorite" class="icono favorite" :class="{ selected: isFavorite }"></span>
     <img :src="product.image" :alt="product.title" class="product-image" />
     <h3 class="product-title">{{ product.title }}</h3>
     <p class="product-description">{{ product.description }}</p>
@@ -11,15 +11,10 @@
 <script>
 export default {
   name: 'ProductCard',
-  props: ['product'],
-  data () {
-    return {
-
-    }
-  },
+  props: ['product', 'isFavorite'],
   methods: {
-    onFavoriteClicked () {
-      this.$emit('productFavoriteClicked', this.product.id)
+    toggleFavorite() {
+      this.$emit('product-favorite-clicked', this.product.id)
     }
   }
 }
@@ -61,6 +56,7 @@ export default {
 
 .favorite {
   position: absolute;
+  cursor: pointer;
   right: 20px;
   width: 30px;
   height: 30px;
@@ -75,7 +71,7 @@ span.icono.favorite::before {
 }
 
 .favorite:hover {
-  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+  filter: drop-shadow(0px 0px 0px rgb(0 0 0 / 1.4));
 }
 
 .favorite-icon {
