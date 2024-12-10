@@ -19,7 +19,6 @@
 import Alert from '../components/ui/Alert.vue'
 import ProductCard from '../components/ProductCard.vue'
 import { getAllProducts } from '@/services/products';
-import { watch } from 'vue';
 
 export default {
   name: 'ProductsList',
@@ -27,6 +26,7 @@ export default {
     Alert,
     ProductCard
   },
+  // remeve unnecessary created hook
   mounted () {
     this.fetchProducts()
   },
@@ -58,7 +58,8 @@ export default {
       }
     },
     toggleProductFavorite (productSelectedId) {
-      //Find in the favorite products array if the product is already there
+      // I resolve this creating an data array with the favorite products ids
+      // First of all, we find in this array if the product is already there
       const index = this.favoriteProductIds.indexOf(productSelectedId)
 
       // Add it if not, otherwise remove it

@@ -11,9 +11,11 @@
 <script>
 export default {
   name: 'ProductCard',
-  props: ['product', 'isFavorite'],
+  // remeve unnecessary data property
+  props: ['product', 'isFavorite'], // The component also gets its favorite status
   methods: {
     toggleFavorite() {
+      //Update emit name to match the parent component
       this.$emit('product-favorite-clicked', this.product.id)
     }
   }
